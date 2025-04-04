@@ -107,7 +107,6 @@ class QuantumEncryption:
         return Fernet.generate_key()
 
 class UltimateScanner:
-    """World's Most Advanced Vulnerability Scanner"""
     def __init__(self):
         self.payloads = self._load_exploit_db()
         self.fingerprints = self._load_fingerprints()
