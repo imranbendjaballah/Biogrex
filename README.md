@@ -6,10 +6,10 @@
 ### 💻 Linux/macOS
 ```bash
 # Automated install:
-curl -sL https://bit.ly/qxf-install | bash
+curl -sL https://github.com/imranbendjaballah/Biogrex.git | bash
 
 # Manual install:
-git clone https://github.com/QuantumXploit/QXF.git
+git clone https://github.com/imranbendjaballah/Biogrex.git
 cd QXF
 python3 -m venv .venv
 source .venv/bin/activate
@@ -19,10 +19,10 @@ pip install -r requirements.txt
 ### 🪟 Windows
 ```powershell
 # PowerShell one-liner:
-iwr -uri https://bit.ly/qxf-win-install -outfile install.ps1; .\install.ps1
+iwr -uri https://github.com/imranbendjaballah/Biogrex.git -outfile install.ps1; .\install.ps1
 
 # Manual install:
-git clone https://github.com/QuantumXploit/QXF.git
+git clone https://github.com/imranbendjaballah/Biogrex.git
 cd QXF
 python -m venv .venv
 .\.venv\Scripts\activate
@@ -33,8 +33,8 @@ pip install -r requirements.txt
 ```bash
 pkg update && pkg upgrade
 pkg install python git rust libffi openssl
-git clone https://github.com/QuantumXploit/QXF.git
-cd QXF
+git clone https://github.com/imranbendjaballah/Biogrex.git
+cd biogrex
 pip install --upgrade pip
 LDFLAGS="-L/data/data/com.termux/files/usr/lib" pip install -r requirements.txt
 ```
@@ -43,12 +43,12 @@ LDFLAGS="-L/data/data/com.termux/files/usr/lib" pip install -r requirements.txt
 
 ### Basic Scan
 ```bash
-python qxf.py scan --target example.com
+python biogrex.py scan --target example.com
 ```
 
 ### Attack Modes
 ```bash
-python qxf.py attack --target example.com --mode stealth
+python biogrex.py attack --target example.com --mode stealth
 ```
 
 ### 🎯 Full Command Reference
@@ -86,6 +86,7 @@ Attack Modes:
 - ✅ Multi-platform support (Linux/Windows/Android)
 - ✅ Automated report generation (PDF/HTML/JSON)
 - ✅ Encrypted command channel
+- ✅ DDOS ATTACK 
 
 ## 📌 Example Scenarios
 ```bash
