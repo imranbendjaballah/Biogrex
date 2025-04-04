@@ -53,7 +53,7 @@ python qxf.py attack --target example.com --mode stealth
 
 ### 🎯 Full Command Reference
 ```text
-Usage: qxf.py [command] [options]
+Usage: biogrex.py [command] [options]
 
 Commands:
   scan       Perform vulnerability scanning
